@@ -4,7 +4,7 @@
     ViewData["Title"] = "Index";
 }
 
-@if (Model.Count() > 0)
+@if (Model.Where(e => e.IsShared == false).Count() > 0)
 {
     <div class="d-flex flex-row">
         <div class="mr-auto p-2">
@@ -16,7 +16,7 @@
     </div>
 
     <div class="d-flex flex-row flex-wrap projects-container">
-        @foreach (var item in Model)
+        @foreach (var item in Model.Where(e => e.IsShared == false))
         {
             <div class="card text-white @item.BackgroundClass mb-3 project-card" data-id="@item.Id">
                 <div class="card-header d-flex justify-content-between align-items-center">@item.Name <span class="badge badge-light badge-pill">@item.ValueCount</span></div>
@@ -26,23 +26,47 @@
             </div>
         }
     </div>
-
-    <div class="mr-auto p-2">
-        <h1>Shared projects:</h1>
-    </div>
-    <div class="jumbotron">
-        <h2>You haven't been included in any projects yet.</h2>
-        <hr class="my-4">
-        <p>Once you are added to another project, it will show up here.</p>
-    </div>
 }
 else
 {
+    <div class="mr-auto p-2">
+        <h1>My projects:</h1>
+    </div>
     <div class="jumbotron">
         <h3 class="display-3">You have no projects</h3>
         <p class="lead">You haven't created any projects yet. You can easily start here:</p>
         <p class="lead">
             <a class="btn btn-primary btn-lg" href="#" role="button">Create new project</a>
         </p>
+    </div>
+}
+
+@if (Model.Where(e => e.IsShared == true).Count() > 0)
+{
+    <div class="d-flex flex-row">
+        <div class="mr-auto p-2">
+            <h1>Shared projects:</h1>
+        </div>
+    </div>
+    <div class="d-flex flex-row flex-wrap projects-container">
+        @foreach (var item in Model.Where(e => e.IsShared == true))
+        {
+            <div class="card text-white @item.BackgroundClass mb-3 project-card" data-id="@item.Id">
+                <div class="card-header d-flex justify-content-between align-items-center">@item.Name <span class="badge badge-light badge-pill">@item.ValueCount</span></div>
+                <div class="card-body">
+                    <p class="card-text">@item.Description</p>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="mr-auto p-2">
+        <h1>Shared projects:</h1>
+    </div>
+    <div class="jumbotron">
+        <h2>You haven't been included in any projects yet.</h2>
+        <p class="lead">Once you are added to another project, it will show up here.</p>
     </div>
 }

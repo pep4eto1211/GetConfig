@@ -5,6 +5,26 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="GetConfigDbModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="AspNetUsers">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="nvarchar" MaxLength="450" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="256" />
+          <Property Name="NormalizedUserName" Type="nvarchar" MaxLength="256" />
+          <Property Name="Email" Type="nvarchar" MaxLength="256" />
+          <Property Name="NormalizedEmail" Type="nvarchar" MaxLength="256" />
+          <Property Name="EmailConfirmed" Type="bit" Nullable="false" />
+          <Property Name="PasswordHash" Type="nvarchar(max)" />
+          <Property Name="SecurityStamp" Type="nvarchar(max)" />
+          <Property Name="ConcurrencyStamp" Type="nvarchar(max)" />
+          <Property Name="PhoneNumber" Type="nvarchar(max)" />
+          <Property Name="PhoneNumberConfirmed" Type="bit" Nullable="false" />
+          <Property Name="TwoFactorEnabled" Type="bit" Nullable="false" />
+          <Property Name="LockoutEnd" Type="datetimeoffset" Precision="7" />
+          <Property Name="LockoutEnabled" Type="bit" Nullable="false" />
+          <Property Name="AccessFailedCount" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="ConfigValues">
           <Key>
             <PropertyRef Name="Id" />
@@ -25,8 +45,19 @@
           <Property Name="OwnerId" Type="nvarchar" MaxLength="450" Nullable="false" />
           <Property Name="Color" Type="nchar" MaxLength="10" Nullable="false" />
         </EntityType>
+        <EntityType Name="ProjectsUsers">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserId" Type="nvarchar" MaxLength="450" Nullable="false" />
+          <Property Name="ProjectId" Type="int" Nullable="false" />
+          <Property Name="AccessFlag" Type="int" Nullable="false" />
+        </EntityType>
         <Association Name="FK_ConfigValues_Projects">
-          <End Role="Projects" Type="Self.Projects" Multiplicity="1" />
+          <End Role="Projects" Type="Self.Projects" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="ConfigValues" Type="Self.ConfigValues" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Projects">
@@ -37,12 +68,64 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Projects_AspNetUsers">
+          <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="1" />
+          <End Role="Projects" Type="Self.Projects" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Projects">
+              <PropertyRef Name="OwnerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProjectsUsers_AspNetUsers">
+          <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="1" />
+          <End Role="ProjectsUsers" Type="Self.ProjectsUsers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ProjectsUsers">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProjectsUsers_Projects">
+          <End Role="Projects" Type="Self.Projects" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="ProjectsUsers" Type="Self.ProjectsUsers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Projects">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ProjectsUsers">
+              <PropertyRef Name="ProjectId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="GetConfigDbModelStoreContainer">
+          <EntitySet Name="AspNetUsers" EntityType="Self.AspNetUsers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ConfigValues" EntityType="Self.ConfigValues" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Projects" EntityType="Self.Projects" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ProjectsUsers" EntityType="Self.ProjectsUsers" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_ConfigValues_Projects" Association="Self.FK_ConfigValues_Projects">
             <End Role="Projects" EntitySet="Projects" />
             <End Role="ConfigValues" EntitySet="ConfigValues" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Projects_AspNetUsers" Association="Self.FK_Projects_AspNetUsers">
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+            <End Role="Projects" EntitySet="Projects" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProjectsUsers_AspNetUsers" Association="Self.FK_ProjectsUsers_AspNetUsers">
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+            <End Role="ProjectsUsers" EntitySet="ProjectsUsers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProjectsUsers_Projects" Association="Self.FK_ProjectsUsers_Projects">
+            <End Role="Projects" EntitySet="Projects" />
+            <End Role="ProjectsUsers" EntitySet="ProjectsUsers" />
           </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
@@ -56,6 +139,20 @@
             <End Role="Project" EntitySet="Projects" />
             <End Role="ConfigValue" EntitySet="ConfigValues" />
           </AssociationSet>
+          <EntitySet Name="ProjectsUsers" EntityType="GetConfigDbModel.ProjectsUser" />
+          <AssociationSet Name="FK_ProjectsUsers_Projects" Association="GetConfigDbModel.FK_ProjectsUsers_Projects">
+            <End Role="Project" EntitySet="Projects" />
+            <End Role="ProjectsUser" EntitySet="ProjectsUsers" />
+          </AssociationSet>
+          <EntitySet Name="AspNetUsers" EntityType="GetConfigDbModel.AspNetUser" />
+          <AssociationSet Name="FK_Projects_AspNetUsers" Association="GetConfigDbModel.FK_Projects_AspNetUsers">
+            <End Role="AspNetUser" EntitySet="AspNetUsers" />
+            <End Role="Project" EntitySet="Projects" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProjectsUsers_AspNetUsers" Association="GetConfigDbModel.FK_ProjectsUsers_AspNetUsers">
+            <End Role="AspNetUser" EntitySet="AspNetUsers" />
+            <End Role="ProjectsUser" EntitySet="ProjectsUsers" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Project">
           <Key>
@@ -67,6 +164,8 @@
           <Property Name="OwnerId" Type="String" Nullable="false" MaxLength="450" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="ConfigValues" Relationship="GetConfigDbModel.FK_ConfigValues_Projects" FromRole="Project" ToRole="ConfigValue" />
           <Property Name="Color" Type="String" Nullable="false" MaxLength="10" FixedLength="true" Unicode="true" />
+          <NavigationProperty Name="ProjectsUsers" Relationship="GetConfigDbModel.FK_ProjectsUsers_Projects" FromRole="Project" ToRole="ProjectsUser" />
+          <NavigationProperty Name="AspNetUser" Relationship="GetConfigDbModel.FK_Projects_AspNetUsers" FromRole="Project" ToRole="AspNetUser" />
         </EntityType>
         <EntityType Name="ConfigValue">
           <Key>
@@ -88,6 +187,77 @@
             </Principal>
             <Dependent Role="ConfigValue">
               <PropertyRef Name="ProjectId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="ProjectsUser">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="String" Nullable="false" MaxLength="450" FixedLength="false" Unicode="true" />
+          <Property Name="ProjectId" Type="Int32" Nullable="false" />
+          <Property Name="AccessFlag" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Project" Relationship="GetConfigDbModel.FK_ProjectsUsers_Projects" FromRole="ProjectsUser" ToRole="Project" />
+          <NavigationProperty Name="AspNetUser" Relationship="GetConfigDbModel.FK_ProjectsUsers_AspNetUsers" FromRole="ProjectsUser" ToRole="AspNetUser" />
+        </EntityType>
+        <Association Name="FK_ProjectsUsers_Projects">
+          <End Type="GetConfigDbModel.Project" Role="Project" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="GetConfigDbModel.ProjectsUser" Role="ProjectsUser" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Project">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ProjectsUser">
+              <PropertyRef Name="ProjectId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="AspNetUser">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="String" Nullable="false" MaxLength="450" FixedLength="false" Unicode="true" />
+          <Property Name="UserName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="NormalizedUserName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="NormalizedEmail" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="EmailConfirmed" Type="Boolean" Nullable="false" />
+          <Property Name="PasswordHash" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="SecurityStamp" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ConcurrencyStamp" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PhoneNumber" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PhoneNumberConfirmed" Type="Boolean" Nullable="false" />
+          <Property Name="TwoFactorEnabled" Type="Boolean" Nullable="false" />
+          <Property Name="LockoutEnd" Type="DateTimeOffset" Precision="7" />
+          <Property Name="LockoutEnabled" Type="Boolean" Nullable="false" />
+          <Property Name="AccessFailedCount" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Projects" Relationship="GetConfigDbModel.FK_Projects_AspNetUsers" FromRole="AspNetUser" ToRole="Project" />
+          <NavigationProperty Name="ProjectsUsers" Relationship="GetConfigDbModel.FK_ProjectsUsers_AspNetUsers" FromRole="AspNetUser" ToRole="ProjectsUser" />
+        </EntityType>
+        <Association Name="FK_Projects_AspNetUsers">
+          <End Type="GetConfigDbModel.AspNetUser" Role="AspNetUser" Multiplicity="1" />
+          <End Type="GetConfigDbModel.Project" Role="Project" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Project">
+              <PropertyRef Name="OwnerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProjectsUsers_AspNetUsers">
+          <End Type="GetConfigDbModel.AspNetUser" Role="AspNetUser" Multiplicity="1" />
+          <End Type="GetConfigDbModel.ProjectsUser" Role="ProjectsUser" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUser">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ProjectsUser">
+              <PropertyRef Name="UserId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -115,6 +285,37 @@
                 <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="Value" ColumnName="Value" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ProjectsUsers">
+            <EntityTypeMapping TypeName="GetConfigDbModel.ProjectsUser">
+              <MappingFragment StoreEntitySet="ProjectsUsers">
+                <ScalarProperty Name="AccessFlag" ColumnName="AccessFlag" />
+                <ScalarProperty Name="ProjectId" ColumnName="ProjectId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AspNetUsers">
+            <EntityTypeMapping TypeName="GetConfigDbModel.AspNetUser">
+              <MappingFragment StoreEntitySet="AspNetUsers">
+                <ScalarProperty Name="AccessFailedCount" ColumnName="AccessFailedCount" />
+                <ScalarProperty Name="LockoutEnabled" ColumnName="LockoutEnabled" />
+                <ScalarProperty Name="LockoutEnd" ColumnName="LockoutEnd" />
+                <ScalarProperty Name="TwoFactorEnabled" ColumnName="TwoFactorEnabled" />
+                <ScalarProperty Name="PhoneNumberConfirmed" ColumnName="PhoneNumberConfirmed" />
+                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
+                <ScalarProperty Name="ConcurrencyStamp" ColumnName="ConcurrencyStamp" />
+                <ScalarProperty Name="SecurityStamp" ColumnName="SecurityStamp" />
+                <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
+                <ScalarProperty Name="EmailConfirmed" ColumnName="EmailConfirmed" />
+                <ScalarProperty Name="NormalizedEmail" ColumnName="NormalizedEmail" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="NormalizedUserName" ColumnName="NormalizedUserName" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

@@ -5,9 +5,14 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="d261413b3261425885d1ea0ed6f1ccb2" Name="Diagram1" >
-        <EntityTypeShape EntityType="GetConfigDbModel.Project" Width="1.5" PointX="0.75" PointY="0.75" />
-        <EntityTypeShape EntityType="GetConfigDbModel.ConfigValue" Width="1.5" PointX="3" PointY="4.625" />
+        <EntityTypeShape EntityType="GetConfigDbModel.Project" Width="1.5" PointX="0.875" PointY="1.5" />
+        <EntityTypeShape EntityType="GetConfigDbModel.ConfigValue" Width="1.5" PointX="0.875" PointY="4.75" />
         <AssociationConnector Association="GetConfigDbModel.FK_ConfigValues_Projects" />
+        <EntityTypeShape EntityType="GetConfigDbModel.ProjectsUser" Width="1.5" PointX="3.875" PointY="0.5" />
+        <AssociationConnector Association="GetConfigDbModel.FK_ProjectsUsers_Projects" />
+        <EntityTypeShape EntityType="GetConfigDbModel.AspNetUser" Width="1.5" PointX="6.625" PointY="1.25" />
+        <AssociationConnector Association="GetConfigDbModel.FK_Projects_AspNetUsers" />
+        <AssociationConnector Association="GetConfigDbModel.FK_ProjectsUsers_AspNetUsers" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

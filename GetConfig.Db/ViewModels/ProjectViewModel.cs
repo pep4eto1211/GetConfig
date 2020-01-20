@@ -13,7 +13,9 @@ namespace GetConfig.Db.ViewModels
         public string Description { get; set; }
         public int ValueCount { get; set; }
 
-        public string Color { get; set;  }
+        public string Color { get; set; }
+
+        public bool IsShared { get; set; }
 
         public string BackgroundClass
         {

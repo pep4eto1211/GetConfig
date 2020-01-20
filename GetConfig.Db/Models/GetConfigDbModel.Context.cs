@@ -27,5 +27,7 @@ namespace GetConfig.Db.Models
     
         public virtual DbSet<Project> Projects { get; set; }
         public virtual DbSet<ConfigValue> ConfigValues { get; set; }
+        public virtual DbSet<ProjectsUser> ProjectsUsers { get; set; }
+        public virtual DbSet<AspNetUser> AspNetUsers { get; set; }
     }
 }

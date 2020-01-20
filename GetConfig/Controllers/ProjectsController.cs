@@ -29,8 +29,8 @@ namespace GetConfig.Controllers
 
         public IActionResult ConfigValues(int id)
         {
-            var model = this._db.GetConfigValuesForProject(id, out string projectName);
-            ViewBag.ProjectName = projectName;
+            var model = this._db.GetConfigValuesForProject(id, User.FindFirstValue(ClaimTypes.NameIdentifier));
+            ViewBag.ProjectName = model.ProjectSettings.Name;
             ViewBag.ProjectId = id;
             return View(model);
         }
