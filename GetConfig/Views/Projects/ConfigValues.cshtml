@@ -17,20 +17,26 @@
     <li class="nav-item">
         <a class="nav-link" data-toggle="tab" href="#usage">Usage</a>
     </li>
-    <li class="nav-item">
-        <a class="nav-link" data-toggle="tab" href="#settings">Project settings</a>
-    </li>
+    @if (((Model.AccessRights & GetConfig.Db.Flags.UserAccessRights.ProjectLevel) == GetConfig.Db.Flags.UserAccessRights.ProjectLevel))
+    {
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#settings">Project settings</a>
+        </li>
+    }
 </ul>
 <div id="myTabContent" class="tab-content">
     <div class="tab-pane fade active show" id="config">
-        <partial name="./ConfigValuesPartial" model="Model.ConfigValues" />
+        <partial name="./ConfigValuesPartial" model="Model" />
     </div>
     <div class="tab-pane fade" id="usage">
         Usage
     </div>
-    <div class="tab-pane fade" id="settings">
-        <partial name="./ProjectSettingsPartial" />
-    </div>
+    @if (((Model.AccessRights & GetConfig.Db.Flags.UserAccessRights.ProjectLevel) == GetConfig.Db.Flags.UserAccessRights.ProjectLevel))
+    {
+        <div class="tab-pane fade" id="settings">
+            <partial name="./ProjectSettingsPartial" />
+        </div>
+    }
 </div>
 
 <partial name="./ModalsPartial" />

@@ -1,24 +1,27 @@
-﻿@model IEnumerable<GetConfig.Db.ViewModels.ConfigValueViewModel>
+﻿@model GetConfig.Db.ViewModels.ConfigViewModel
 
-@if (Model.Count() > 0)
+@if (Model.ConfigValues.Count() > 0)
 {
     <div class="d-flex flex-row">
         <div class="mr-auto p-2">
             <h1>@ViewBag.ProjectName config:</h1>
         </div>
-        <div class="p-2">
-            <button type="button" class="btn btn-secondary" id="add-new-value-btn" data-toggle="modal" data-target="#valueEditModal" onclick="prepareAddModal()">+ Add new</button>
-        </div>
+        @if (((Model.AccessRights & GetConfig.Db.Flags.UserAccessRights.AddNew) == GetConfig.Db.Flags.UserAccessRights.AddNew))
+        {
+            <div class="p-2">
+                <button type="button" class="btn btn-secondary" id="add-new-value-btn" data-toggle="modal" data-target="#valueEditModal" onclick="prepareAddModal()">+ Add new</button>
+            </div>
+        }
     </div>
 
     <table class="table table-hover">
         <thead>
             <tr>
                 <th class="values-table-header">
-                    @Html.DisplayNameFor(model => model.Name)
+                    Name
                 </th>
                 <th class="values-table-header">
-                    @Html.DisplayNameFor(model => model.Description)
+                    Description
                 </th>
                 <th class="values-table-header">
                     Actions
@@ -26,7 +29,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model)
+            @foreach (var item in Model.ConfigValues)
             {
                 <tr class="values-table-row">
                     <td class="values-table-cell">
@@ -36,9 +39,18 @@
                         @Html.DisplayFor(modelItem => item.Description)
                     </td>
                     <td class="values-table-cell">
-                        <button type="button" class="btn btn-link action-btn" data-toggle="modal" data-target="#valueViewModal" onclick="setValueModal('@item.Name', '@item.Value')">View</button> |
-                        <button type="button" class="btn btn-link action-btn" data-toggle="modal" data-target="#valueEditModal" onclick="prepareEditModal('@item.Name', '@item.Value', '@item.Description', @item.Id)">Edit</button> |
-                        <button type="button" class="btn btn-link action-btn" data-toggle="modal" data-target="#confirmDeleteModal" onclick="prepareDeleteModal('@item.Name', @item.Id)">Delete</button>
+                        @if ((Model.AccessRights & GetConfig.Db.Flags.UserAccessRights.ViewValue) == GetConfig.Db.Flags.UserAccessRights.ViewValue)
+                        {
+                            <button type="button" class="btn btn-link action-btn" data-toggle="modal" data-target="#valueViewModal" onclick="setValueModal('@item.Name', '@item.Value')">View</button>
+                        }
+                        @if ((Model.AccessRights & GetConfig.Db.Flags.UserAccessRights.Edit) == GetConfig.Db.Flags.UserAccessRights.Edit)
+                        {
+                            <span> | </span><button type="button" class="btn btn-link action-btn" data-toggle="modal" data-target="#valueEditModal" onclick="prepareEditModal('@item.Name', '@item.Value', '@item.Description', @item.Id)">Edit</button>
+                        }
+                        @if ((Model.AccessRights & GetConfig.Db.Flags.UserAccessRights.Delete) == GetConfig.Db.Flags.UserAccessRights.Delete)
+                        {
+                            <span> | </span> <button type="button" class="btn btn-link action-btn" data-toggle="modal" data-target="#confirmDeleteModal" onclick="prepareDeleteModal('@item.Name', @item.Id)">Delete</button>
+                        }
                     </td>
                 </tr>
             }
@@ -49,9 +61,12 @@ else
 {
     <div class="jumbotron">
         <h3 class="display-3">@ViewBag.ProjectName has no config values</h3>
-        <p class="lead">You haven't created any config values yet. You can easily start here:</p>
-        <p class="lead">
-            <button class="btn btn-primary btn-lg" role="button" data-toggle="modal" data-target="#valueEditModal" onclick="prepareAddModal()">Add new config value</button>
-        </p>
+        @if (((Model.AccessRights & GetConfig.Db.Flags.UserAccessRights.AddNew) == GetConfig.Db.Flags.UserAccessRights.AddNew))
+        {
+            <p class="lead">You haven't created any config values yet. You can easily start here:</p>
+            <p class="lead">
+                <button class="btn btn-primary btn-lg" role="button" data-toggle="modal" data-target="#valueEditModal" onclick="prepareAddModal()">Add new config value</button>
+            </p>
+        }
     </div>
 }
